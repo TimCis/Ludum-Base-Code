@@ -1,0 +1,70 @@
+package com.powerflasher.SampleApp {
+	import mx.core.BitmapAsset;
+	import flash.events.Event;
+	import flash.geom.Matrix;
+	import flash.display.BitmapData;
+	import flash.display.Sprite;
+	import flash.display.Bitmap;
+
+	/**
+	 * @author timcis
+	 */
+	public class Busload extends Sprite {
+		[Embed(source="/../lib/blockage2.png")]
+		private var Picture:Class;
+		[Embed(source="/../lib/street.png")]
+		private var Terrain:Class;
+		[Embed(source="/../lib/divider.png")]
+		private var RoadBlock:Class;
+		public function Busload() {
+			var carBlock:BitmapData = BitmapAsset(new RoadBlock()).bitmapData;
+			var mpm:BitmapData = carBlock;
+			
+			var pic1:BitmapData = BitmapAsset(new Picture()).bitmapData;
+			var bpm:BitmapData = pic1;
+			
+			var dirt:Bitmap = new Terrain();
+			var dpm:BitmapData = dirt.bitmapData;
+			
+			var moveData:Matrix = new Matrix();
+			var moveDataFore:Matrix = new Matrix();
+			var repeat:Sprite = new Sprite();
+			var repeatBack:Sprite = new Sprite();
+			var repeatMiddle:Sprite = new Sprite();
+			addChild(repeatBack);
+			addChild(repeat);
+			addChild(repeatMiddle);
+			
+			function scaleIt(bitmapData:BitmapData, scale:Number):BitmapData{
+				scale = Math.abs(scale);
+				var width:int = (bitmapData.width * scale) || 1;
+				var height:int = (bitmapData.height * scale) || 1;
+				var transparent:Boolean = bitmapData.transparent;
+				var result:BitmapData = new BitmapData(width, height, transparent);
+				moveData.scale(scale, scale);
+				moveDataFore.scale(scale, scale);
+				result.draw(bitmapData, moveData);
+				return result;
+			}
+			
+			var bitmapB:Bitmap = new Bitmap(scaleIt(bpm, 5));
+			bitmapB;
+			
+			repeat.addEventListener(Event.ENTER_FRAME, endlessMotion);
+			
+			function endlessMotion(event:Event):void{
+			moveData.translate(-10, 0);
+			
+			repeat.graphics.clear();
+			repeat.graphics.beginBitmapFill(bpm, moveData);
+			repeat.graphics.drawRect(0, 360, stage.stageWidth, 56);
+			repeatBack.graphics.clear();
+			repeatBack.graphics.beginBitmapFill(dpm, moveData);
+			repeatBack.graphics.drawRect(0, 0, stage.stageWidth, stage.stageHeight);
+			repeatMiddle.graphics.clear();
+			repeatMiddle.graphics.beginBitmapFill(mpm, moveData);
+			repeatMiddle.graphics.drawRect(0, 150, stage.stageWidth, 100);
+			}
+		}
+	}
+}
